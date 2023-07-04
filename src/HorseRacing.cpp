@@ -1,5 +1,9 @@
 #include "HorseMatrix.h"
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 //Problem is from: https://www.geeksforgeeks.org/puzzle-9-find-the-fastest-3-horses/
 
 /* 
@@ -16,7 +20,12 @@ The values are printed ONLY for the clarity of the user, you'll see that all of 
 using namespace std;
 
 int main() {
+
+    #ifdef WIN32
+    ::srand( GetTickCount() );
+    #else
     srand((unsigned) time(NULL));
+    #endif
 
     HorseMatrix horses;
 
@@ -37,5 +46,9 @@ int main() {
     horses.CheckWinners(winners);
 
     cout << endl << "Amounts of races done: " << horses.GetRacesAmount() << endl;
+
+    cin.get();
+
+    return 0;
 
 }
