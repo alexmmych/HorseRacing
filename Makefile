@@ -4,6 +4,7 @@ executable = HorseRacing
 target: $(executable)
 
 $(executable):
+	mkdir build
 	$(CXX) src/*.cpp -Iinclude -o build/$(executable)
 
 clean:
