@@ -35,3 +35,7 @@
 
 build/*
 !build/.gitkeep
+
+# VSCode
+
+.vscode/
