@@ -1,19 +1,22 @@
 #include "HorseMatrix.h"
 
-// random generator function:
+//Random generator function:
 int randomize (int i) { return std::rand()%i; }
 
 HorseMatrix::HorseMatrix() {
+    //Size of the matrix
     const int size = 25;
 
+    //Array which will be shuffled in order to create the matrix
     int values[size];
 
     for (int i = 0; i < size; i++) {
-        values[i] = i+1;
+        values[i] = i+1; //+1 to avoid 0.
     }
 
     std::random_shuffle(std::begin(values),std::end(values),randomize);
 
+    //Used in the for loop in order to get every value of the previously shuffled array.
     int array_index = 0;
 
     for (int y = 0; y < 5; y++) {
@@ -27,13 +30,15 @@ HorseMatrix::HorseMatrix() {
     }
 
     std::cout << "Initial matrix: " << std::endl;
-
     PrintMatrix();
 }
+
+//Note that sort() will give variables in a descending order, this is done in order for the fastest horses to be on the right
 bool HorseMatrix::CompareHorses(Horse &horse1, Horse &horse2) {
     return horse1.value > horse2.value;
 }
 
+//Simple print by accessing the value of each horse and printing them in a table manner
 void HorseMatrix::PrintMatrix() {
     for (int y = 0; y < 5; y++) {
         for (int x = 0; x < 5; x++) {
@@ -44,16 +49,19 @@ void HorseMatrix::PrintMatrix() {
     std::cout << std::endl;
 }
 
-std::unique_ptr<HorseMatrix::MatrixPosition[]>  HorseMatrix::RaceHorses(MatrixPosition locations[5]) {
+std::unique_ptr<HorseMatrix::MatrixPosition[]> HorseMatrix::RaceHorses(MatrixPosition locations[5]) {
     number_of_races += 1;
 
+    //Int variables used to identify cases where the horses belong in the same row or column
     int vertical_count = 0;
     int horizontal_count = 0;
 
+    //Variable used to contain currently selected horses for a temporary period.
     Horse horses[5];
-    std::unique_ptr<HorseMatrix::MatrixPosition[]> p = std::make_unique<MatrixPosition[]>(5);
+    //Variable to be returned. Only has value on the last case, since it's needed to check the winners.
+    std::unique_ptr<HorseMatrix::MatrixPosition[]> final_horses = std::make_unique<MatrixPosition[]>(5);
 
-
+    //Initial for loop for detecting same row or column cases. 
     for (int i = 0; i < 5; i++) {
         if (locations[0].y == locations[i].y) {
             horizontal_count += 1;
@@ -64,38 +72,44 @@ std::unique_ptr<HorseMatrix::MatrixPosition[]>  HorseMatrix::RaceHorses(MatrixPo
         }
     }
 
+    //Only evaulates if all horses are located on the same row.
     if (horizontal_count == 5) {
-        std::cout << "Row detected" << std::endl;
         int row = locations[0].y;
         int size = sizeof horse_matrix / sizeof horse_matrix[0];
 
+        //Really easy and simple usage of sort.
         std::sort(horse_matrix[row], horse_matrix[row] + size, &CompareHorses);
         
     } else if (vertical_count == 5) {
-        std::cout << "Column detected" << std::endl;
         int column = locations[0].x;
 
+        //Unfortunately for columns, it's not the same and we have to copy the horses.
         for (int i = 0; i < 5; i++) {
             horses[i] = horse_matrix[i][column];
         }
 
         int size = sizeof horses / sizeof horses[0];
 
+        //We then proceed to sort them in the correct order.
         std::sort(horses, horses + size, &CompareHorses);
 
+        //And we create a temporary copy of horse_matrix in order to sort it in order there and then replace the original.
         Horse temp_matrix[5][5];
-
         for (int y = 0; y < 5; y++) {
             for (int x = 0; x < 5; x++) {
+                //4-y because of sort() giving us descending order.
                 temp_matrix[y][x] = horse_matrix[horses[4-y].location.y][x];
                 temp_matrix[y][x].location = {y,x};
             }
         }
 
+        //A simple swap since they have the same size.
         std::swap(temp_matrix,horse_matrix);
 
+//This is the case when horses have been selected which aren't in one row or column (selected freely)
     } else {
 
+        //Almost identical procedure as in the column case
         for (int i = 0; i < 5; i++) {
             horses[i] = horse_matrix[locations[i].y][locations[i].x];
         }
@@ -104,16 +118,19 @@ std::unique_ptr<HorseMatrix::MatrixPosition[]>  HorseMatrix::RaceHorses(MatrixPo
 
         std::sort(horses, horses + size, &CompareHorses);
 
+        //But here, instead of creating a temp_matrix or ordering, we just return the selected horses 
         for (int i = 0; i < 5; i++) {
             std::cout << "Horse: " << horses[4-i].value << " at (" << horses[4-i].location.y << "," << horses[4-i].location.x  << ")" << std::endl;
-            p.get()[i] = horses[4-i].location;
+            final_horses.get()[i] = horses[4-i].location;
         }
 
         std::cout << std::endl;
     }
-    return p;
+
+    return final_horses;
 }
 
+//Checks for winners, by accessing their values in a for loop and checking against it in a switch case.
 void HorseMatrix::CheckWinners(MatrixPosition locations[3]) {
     int count = 0;
     for (int i = 0; i < 3; i++) {
@@ -144,6 +161,8 @@ void HorseMatrix::CheckWinners(MatrixPosition locations[3]) {
 
     if (count == 3) {
         std::cout << "You are correct!" << std::endl;
+    } else {
+        std::cout << "You are incorrect. You lose" << std::endl;
     }
 } 
 
