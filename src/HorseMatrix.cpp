@@ -44,11 +44,14 @@ void HorseMatrix::PrintMatrix() {
     std::cout << std::endl;
 }
 
-void HorseMatrix::RaceHorses(MatrixPosition locations[5]) {
+std::unique_ptr<HorseMatrix::MatrixPosition[]>  HorseMatrix::RaceHorses(MatrixPosition locations[5]) {
     number_of_races += 1;
 
     int vertical_count = 0;
     int horizontal_count = 0;
+
+    Horse horses[5];
+    std::unique_ptr<HorseMatrix::MatrixPosition[]> p = std::make_unique<MatrixPosition[]>(5);
 
 
     for (int i = 0; i < 5; i++) {
@@ -71,7 +74,6 @@ void HorseMatrix::RaceHorses(MatrixPosition locations[5]) {
     } else if (vertical_count == 5) {
         std::cout << "Column detected" << std::endl;
         int column = locations[0].x;
-        Horse horses[5];
 
         for (int i = 0; i < 5; i++) {
             horses[i] = horse_matrix[i][column];
@@ -89,30 +91,26 @@ void HorseMatrix::RaceHorses(MatrixPosition locations[5]) {
                 temp_matrix[y][x].location = {y,x};
             }
         }
+
         std::swap(temp_matrix,horse_matrix);
+
+    } else {
+
+        for (int i = 0; i < 5; i++) {
+            horses[i] = horse_matrix[locations[i].y][locations[i].x];
+        }
+
+        int size = sizeof horses / sizeof horses[0];
+
+        std::sort(horses, horses + size, &CompareHorses);
+
+        for (int i = 0; i < 5; i++) {
+            std::cout << "Horse: " << horses[4-i].value << " at (" << horses[4-i].location.y << "," << horses[4-i].location.x  << ")" << std::endl;
+            p.get()[i] = horses[4-i].location;
+        }
+
+        std::cout << std::endl;
     }
-}
-
-std::unique_ptr<HorseMatrix::MatrixPosition[]> HorseMatrix::FinalRace(MatrixPosition locations[5]) {
-    Horse horses[5];
-
-    for (int i = 0; i < 5; i++) {
-        horses[i] = horse_matrix[locations[i].y][locations[i].x];
-    }
-
-    int size = sizeof horses / sizeof horses[0];
-
-    std::sort(horses, horses + size, &CompareHorses);
-
-    auto p = std::make_unique<MatrixPosition[]>(5);
-
-    for (int i = 0; i < 5; i++) {
-        std::cout << "Horse: " << horses[4-i].value << " at (" << horses[4-i].location.y << "," << horses[4-i].location.x  << ")" << std::endl;
-        p.get()[i] = horses[4-i].location;
-    }
-
-    std::cout << std::endl;
-
     return p;
 }
 

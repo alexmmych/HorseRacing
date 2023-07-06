@@ -51,7 +51,7 @@ int main() {
     HorseMatrix::MatrixPosition finals[5] = {{0,2},{0,3},{1,3},{1,4},{2,4}};
     
     std::cout << "Finals: " << std::endl;
-    auto a = horses.FinalRace(finals);
+    auto a = horses.RaceHorses(finals);
 
     HorseMatrix::MatrixPosition winners[3] = {{0,4},a.get()[0],a.get()[1]};
     horses.CheckWinners(winners);

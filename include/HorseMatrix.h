@@ -29,8 +29,7 @@ class HorseMatrix {
         
         void CheckWinners(MatrixPosition locations[3]);
 
-        void RaceHorses(MatrixPosition locations[5]);
-        std::unique_ptr<MatrixPosition[]> FinalRace(MatrixPosition locations[5]);
+        std::unique_ptr<MatrixPosition[]> RaceHorses(MatrixPosition locations[5]);
 
         int GetRacesAmount();
         void PrintMatrix();
