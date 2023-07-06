@@ -153,9 +153,8 @@ void HorseMatrix::CheckWinners(MatrixPosition locations[3]) {
                     break;
                 default:
                     std::cout << "not a winner :(" << std::endl;
-                    
+                    break;
             }
-
         }
     }
 
