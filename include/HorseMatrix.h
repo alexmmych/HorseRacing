@@ -1,47 +1,37 @@
 #include <iostream>
 #include <algorithm>
+#include <memory>
 
-using namespace std;
-
-#define ROW 'r'
-#define COLUMN 'c'
-
-class InitializeMatrix {
-    private:
-        vector<int> ignore_vector;
-        int ignore_count;
-
-    protected:
-        int number_matrix[5][5];
-        InitializeMatrix();
-};
-
-class HorseMatrix : public InitializeMatrix {
+class HorseMatrix {
     public:
+
         struct MatrixPosition {
             int y;
             int x;
         };
+
     private:
-
-        int number_of_races = 0;
-
+    
         struct Horse {
             int value;
             MatrixPosition location;
         };
 
+        int number_of_races = 0;
+        
     public:
+
         Horse horse_matrix[5][5];
 
-        HorseMatrix();
+        static bool CompareHorses(Horse &horse1, Horse &horse2);
 
-        void RaceLine(int line, char option);
+        HorseMatrix();
+        
         void CheckWinners(MatrixPosition locations[3]);
 
-        MatrixPosition* RaceHorses(MatrixPosition locations[5]);
-
+        void RaceHorses(MatrixPosition locations[5]);
+        std::unique_ptr<MatrixPosition[]> FinalRace(MatrixPosition locations[5]);
 
         int GetRacesAmount();
-
+        void PrintMatrix();
 };

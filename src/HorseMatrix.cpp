@@ -1,131 +1,143 @@
 #include "HorseMatrix.h"
 
-InitializeMatrix::InitializeMatrix() {
-
-    cout << "Initial horse placements: " << endl;
-
-    for (int y = 0; y < 5; y++) {
-
-        for (int x = 0; x < 5; x++) {
-
-            int random_number = rand() % 26;
-
-            ignore_count = count(ignore_vector.begin(),ignore_vector.end(),random_number);
-
-            while (ignore_count > 0 || random_number == 0) {
-                random_number = rand() % 26;
-                ignore_count = count(ignore_vector.begin(),ignore_vector.end(),random_number);
-            }
-
-            number_matrix[y][x] = random_number;
-
-            ignore_vector.push_back(random_number);
-
-            cout << "\t" << number_matrix[y][x];
-        }
-
-        cout << endl;
-    }
-}
-
+// random generator function:
+int randomize (int i) { return std::rand()%i; }
 
 HorseMatrix::HorseMatrix() {
+    const int size = 25;
+
+    int values[size];
+
+    for (int i = 0; i < size; i++) {
+        values[i] = i+1;
+    }
+
+    std::random_shuffle(std::begin(values),std::end(values),randomize);
+
+    int array_index = 0;
+
     for (int y = 0; y < 5; y++) {
 
         for (int x = 0; x < 5; x++) {
-            horse_matrix[y][x] = {number_matrix[y][x]};
+            horse_matrix[y][x] = {values[array_index]};
             horse_matrix[y][x].location = {y,x};
+
+            array_index += 1;
         }
+    }
+
+    std::cout << "Initial matrix: " << std::endl;
+
+    PrintMatrix();
+}
+bool HorseMatrix::CompareHorses(Horse &horse1, Horse &horse2) {
+    return horse1.value > horse2.value;
+}
+
+void HorseMatrix::PrintMatrix() {
+    for (int y = 0; y < 5; y++) {
+        for (int x = 0; x < 5; x++) {
+            std::cout << "\t" << horse_matrix[y][x].value;
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+void HorseMatrix::RaceHorses(MatrixPosition locations[5]) {
+    number_of_races += 1;
+
+    int vertical_count = 0;
+    int horizontal_count = 0;
+
+
+    for (int i = 0; i < 5; i++) {
+        if (locations[0].y == locations[i].y) {
+            horizontal_count += 1;
+        }
+
+        if (locations[0].x == locations[i].x) {
+            vertical_count += 1;
+        }
+    }
+
+    if (horizontal_count == 5) {
+        std::cout << "Row detected" << std::endl;
+        int row = locations[0].y;
+        int size = sizeof horse_matrix / sizeof horse_matrix[0];
+
+        std::sort(horse_matrix[row], horse_matrix[row] + size, &CompareHorses);
+        
+    } else if (vertical_count == 5) {
+        std::cout << "Column detected" << std::endl;
+        int column = locations[0].x;
+        Horse horses[5];
+
+        for (int i = 0; i < 5; i++) {
+            horses[i] = horse_matrix[i][column];
+        }
+
+        int size = sizeof horses / sizeof horses[0];
+
+        std::sort(horses, horses + size, &CompareHorses);
+
+        Horse temp_matrix[5][5];
+
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 5; x++) {
+                temp_matrix[y][x] = horse_matrix[horses[4-y].location.y][x];
+                temp_matrix[y][x].location = {y,x};
+            }
+        }
+        std::swap(temp_matrix,horse_matrix);
     }
 }
 
-void HorseMatrix::RaceLine(int line, char option) {
-    int race[5];
-    number_of_races += 1;
-
-    if (option == ROW) {
-        for (int i = 0; i < 5; i++) {
-            race[i] = horse_matrix[line][i].value;
-        }
-
-        sort(race, race + sizeof race / sizeof race[0]);
-
-        for (int i = 0; i < 5; i++)  {
-            horse_matrix[line][i].value = race[4-i];
-        }
-        
-    } else if (option == COLUMN) {
-        for (int i = 0; i < 5; i++) {
-            race[i] = horse_matrix[i][line].value;
-        }
-
-        sort(race, race + sizeof race / sizeof race[0]);
-
-        int rep = 0;
-
-        for (int i = 0; i < 5; i++)  {
-            for (int b = 0; b < 5; b++) {
-                if (horse_matrix[b][line].value == race[i]) {
-                    swap(horse_matrix[b],horse_matrix[rep]);
-                    rep += 1;
-                }
-            }
-        }
-        for (int y = 0; y < 5; y++)  {
-            for (int x = 0; x <5; x++) {
-                cout << "\t" << horse_matrix[y][x].value;
-            }
-            cout << endl;
-        }
-    }
-}
-
-HorseMatrix::MatrixPosition* HorseMatrix::RaceHorses(MatrixPosition locations[5]) {
-    number_of_races += 1;
-
-    int race[5];
-
-    MatrixPosition* pos = new MatrixPosition[5];
+std::unique_ptr<HorseMatrix::MatrixPosition[]> HorseMatrix::FinalRace(MatrixPosition locations[5]) {
+    Horse horses[5];
 
     for (int i = 0; i < 5; i++) {
-        race[i] = horse_matrix[locations[i].y][locations[i].x].value;
+        horses[i] = horse_matrix[locations[i].y][locations[i].x];
     }
 
-    sort(race, race + sizeof race / sizeof race[0]);
+    int size = sizeof horses / sizeof horses[0];
+
+    std::sort(horses, horses + size, &CompareHorses);
+
+    auto p = std::make_unique<MatrixPosition[]>(5);
 
     for (int i = 0; i < 5; i++) {
-        for (int b = 0; b < 5; b++) {
-            if (race[i] == horse_matrix[locations[b].y][locations[b].x].value) {
-                pos[i] = locations[b];
-            }
-        }
+        std::cout << "Horse: " << horses[4-i].value << " at (" << horses[4-i].location.y << "," << horses[4-i].location.x  << ")" << std::endl;
+        p.get()[i] = horses[4-i].location;
     }
-        
-    return pos;
+
+    std::cout << std::endl;
+
+    return p;
 }
 
 void HorseMatrix::CheckWinners(MatrixPosition locations[3]) {
     int count = 0;
     for (int i = 0; i < 3; i++) {
-        cout << "Position chosen at: " << "[" << locations[i].y << "," << locations[i].x << "]";
+        std::cout << "Position chosen at: " << "[" << locations[i].y << "," << locations[i].x << "]";
 
         if (horse_matrix[locations[i].y][locations[i].x].value == i+1) {
             count += 1;
 
-            cout << " is ";
+            std::cout << " is ";
 
             switch (count) {
                 case 1:
-                    cout << "first place!" << endl;
+                    std::cout << "first place!" << std::endl;
                     break;
                 case 2:
-                    cout << "second place!" << endl;
+                    std::cout << "second place!" << std::endl;
                     break;
                 case 3:
-                    cout << "third place!" << endl;
+                    std::cout << "third place!" << std::endl;
                     break;
                 default:
-                    cout << "not a winner :(" << endl;
+                    std::cout << "not a winner :(" << std::endl;
                     
             }
 
@@ -133,7 +145,7 @@ void HorseMatrix::CheckWinners(MatrixPosition locations[3]) {
     }
 
     if (count == 3) {
-        cout << "You are correct!" << endl;
+        std::cout << "You are correct!" << std::endl;
     }
 } 
 

@@ -17,8 +17,6 @@ it's essentially a sort of a row or column from the matrix, there's also a RaceH
 The values are printed ONLY for the clarity of the user, you'll see that all of the values are private.
 */
 
-using namespace std;
-
 int main() {
 
     #ifdef WIN32
@@ -28,26 +26,39 @@ int main() {
     #endif
 
     HorseMatrix horses;
+    HorseMatrix::MatrixPosition initial_races[5][5];
 
-    for (int i = 0; i < 5; i++) {
-        horses.RaceLine(i,ROW);
+    for (int y = 0; y < 5; y++) {
+        for (int x = 0; x < 5; x++) {
+            initial_races[y][x] = {y,x};
+        }
+        horses.RaceHorses(initial_races[y]);
     }
 
-    cout << endl;
+    std::cout << "Position after " << horses.GetRacesAmount() << " races: " << std::endl;
+    horses.PrintMatrix();
 
-    cout << "Position after " << horses.GetRacesAmount() + 1 << " races: " << endl;
+    HorseMatrix::MatrixPosition semifinals[5];
 
-    horses.RaceLine(4,COLUMN);
+    for (int y = 0; y < 5; y++) {
+        semifinals[y] = {y,4};
+    }
+
+    std::cout << "Semifinals: " << std::endl;
+    horses.RaceHorses(semifinals);
+    horses.PrintMatrix();
 
     HorseMatrix::MatrixPosition finals[5] = {{0,2},{0,3},{1,3},{1,4},{2,4}};
-    HorseMatrix::MatrixPosition* pos = horses.RaceHorses(finals);
-    HorseMatrix::MatrixPosition winners[3] = {{0,4},pos[0],pos[1]};
+    
+    std::cout << "Finals: " << std::endl;
+    auto a = horses.FinalRace(finals);
 
+    HorseMatrix::MatrixPosition winners[3] = {{0,4},a.get()[0],a.get()[1]};
     horses.CheckWinners(winners);
 
-    cout << endl << "Amounts of races done: " << horses.GetRacesAmount() << endl;
+    std::cout << std::endl << "Amounts of races done: " << horses.GetRacesAmount() << std::endl;
 
-    cin.get();
+    std::cin.get();
 
     return 0;
 
