@@ -37,6 +37,14 @@ bool HorseMatrix::CompareHorses(Horse &horse1, Horse &horse2) {
     return horse1.value > horse2.value;
 }
 
+void HorseMatrix::ResetCoordinates() {
+    for (int y = 0; y < 5; y++) {
+        for (int x = 0; x < 5; x++) {
+            horse_matrix[y][x].location = {y,x};
+        }
+    }
+}
+
 
 void HorseMatrix::PrintMatrix() {
     for (int y = 0; y < 5; y++) {
@@ -80,31 +88,28 @@ std::unique_ptr<HorseMatrix::MatrixPosition[]> HorseMatrix::RaceHorses(MatrixPos
         
     } else if (vertical_count == 5) {
         int column = locations[0].x;
-
-        //Unfortunately for columns, it's not the same and we have to copy the horses.
-        for (int i = 0; i < 5; i++) {
-            horses[i] = horse_matrix[i][column];
-        }
-
-        int size = sizeof horses / sizeof horses[0];
-
-        //We then proceed to sort them in the correct order.
-        std::sort(horses, horses + size, &CompareHorses);
-
-        //And we create a temporary copy of horse_matrix in order to sort it in order there and then replace the original.
         Horse temp_matrix[5][5];
+        int size = sizeof temp_matrix / sizeof temp_matrix[0];
+
         for (int y = 0; y < 5; y++) {
             for (int x = 0; x < 5; x++) {
-                //4-y because of sort() giving us descending order.
-                temp_matrix[y][x] = horse_matrix[horses[4-y].location.y][x];
-                temp_matrix[y][x].location = {y,x};
+                temp_matrix[x][y] = horse_matrix[y][4-x];
             }
         }
-
-        //A simple swap since they have the same size.
+        
+        /*
+        This techincally races all of the previous horses a second time,
+        if we equate sorting to racing, but since it's much more difficult
+        to move them accordingly to the first positions, rather than just
+        sorting them again, then it's allowed since the logic behind it
+        stays the same
+        */
+        for (int i = 0; i < 5; i++) {
+            std::sort(temp_matrix[i], temp_matrix[i] + size, &CompareHorses);
+        }
         std::swap(temp_matrix,horse_matrix);
+        ResetCoordinates();
 
-    //This is the case when horses have been selected which aren't in one row or column (selected freely)
     } else {
 
         for (int i = 0; i < 5; i++) {

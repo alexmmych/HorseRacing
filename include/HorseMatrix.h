@@ -24,6 +24,9 @@ class HorseMatrix {
         };
 
         int number_of_races = 0;
+
+        //Useful for when we change the matrix and get it's adjunct.
+        void ResetCoordinates();
         
     public:
 
