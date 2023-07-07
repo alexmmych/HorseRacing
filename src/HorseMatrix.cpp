@@ -4,7 +4,6 @@
 int randomize (int i) { return std::rand()%i; }
 
 HorseMatrix::HorseMatrix() {
-    //Size of the matrix
     const int size = 25;
 
     //Array which will be shuffled in order to create the matrix
@@ -38,7 +37,7 @@ bool HorseMatrix::CompareHorses(Horse &horse1, Horse &horse2) {
     return horse1.value > horse2.value;
 }
 
-//Simple print by accessing the value of each horse and printing them in a table manner
+
 void HorseMatrix::PrintMatrix() {
     for (int y = 0; y < 5; y++) {
         for (int x = 0; x < 5; x++) {
@@ -61,7 +60,7 @@ std::unique_ptr<HorseMatrix::MatrixPosition[]> HorseMatrix::RaceHorses(MatrixPos
     //Variable to be returned. Only has value on the last case, since it's needed to check the winners.
     std::unique_ptr<HorseMatrix::MatrixPosition[]> final_horses = std::make_unique<MatrixPosition[]>(5);
 
-    //Initial for loop for detecting same row or column cases. 
+
     for (int i = 0; i < 5; i++) {
         if (locations[0].y == locations[i].y) {
             horizontal_count += 1;
@@ -72,7 +71,6 @@ std::unique_ptr<HorseMatrix::MatrixPosition[]> HorseMatrix::RaceHorses(MatrixPos
         }
     }
 
-    //Only evaulates if all horses are located on the same row.
     if (horizontal_count == 5) {
         int row = locations[0].y;
         int size = sizeof horse_matrix / sizeof horse_matrix[0];
@@ -106,10 +104,9 @@ std::unique_ptr<HorseMatrix::MatrixPosition[]> HorseMatrix::RaceHorses(MatrixPos
         //A simple swap since they have the same size.
         std::swap(temp_matrix,horse_matrix);
 
-//This is the case when horses have been selected which aren't in one row or column (selected freely)
+    //This is the case when horses have been selected which aren't in one row or column (selected freely)
     } else {
 
-        //Almost identical procedure as in the column case
         for (int i = 0; i < 5; i++) {
             horses[i] = horse_matrix[locations[i].y][locations[i].x];
         }
@@ -118,7 +115,7 @@ std::unique_ptr<HorseMatrix::MatrixPosition[]> HorseMatrix::RaceHorses(MatrixPos
 
         std::sort(horses, horses + size, &CompareHorses);
 
-        //But here, instead of creating a temp_matrix or ordering, we just return the selected horses 
+        //But here, instead of ordering, we just return the selected horses 
         for (int i = 0; i < 5; i++) {
             std::cout << "Horse: " << horses[4-i].value << " at (" << horses[4-i].location.y << "," << horses[4-i].location.x  << ")" << std::endl;
             final_horses.get()[i] = horses[4-i].location;
@@ -130,7 +127,6 @@ std::unique_ptr<HorseMatrix::MatrixPosition[]> HorseMatrix::RaceHorses(MatrixPos
     return final_horses;
 }
 
-//Checks for winners, by accessing their values in a for loop and checking against it in a switch case.
 void HorseMatrix::CheckWinners(MatrixPosition locations[3]) {
     int count = 0;
     for (int i = 0; i < 3; i++) {
@@ -164,8 +160,3 @@ void HorseMatrix::CheckWinners(MatrixPosition locations[3]) {
         std::cout << "You are incorrect. You lose" << std::endl;
     }
 } 
-
-int HorseMatrix::GetRacesAmount() {
-    return number_of_races;
-}
-

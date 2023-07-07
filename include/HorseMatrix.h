@@ -27,16 +27,15 @@ class HorseMatrix {
         
     public:
 
-    /*  
-        Note: The horse_matrix allows for fast sort of rows using STL sort() but 
-        the same canot be said for columns, since they aren't in the same array.
-    */
-
+        /*  
+            Note: The horse_matrix stores all of the horses and their speed values.
+            This allows us to STL sort() rows.
+        */
         Horse horse_matrix[5][5];
 
         /*  
             Function which is passed to sort() https://en.cppreference.com/w/cpp/algorithm/sort
-            in order to compare Horse structs by their value in a row. #See line 30#
+            in order to compare Horse structs by their value in a row.
         */
         static bool CompareHorses(Horse &horse1, Horse &horse2);
 
@@ -51,10 +50,10 @@ class HorseMatrix {
         */
         std::unique_ptr<MatrixPosition[]> RaceHorses(MatrixPosition locations[5]);
 
-        //Gets the private variable "number_of_races".
-        int GetRacesAmount();
-        //Prints the matrix for the user.
+
+        int GetRacesAmount() {return number_of_races;};
+
         void PrintMatrix();
-        //Checks to see if chosen horses based on their position are the winners. (Place 1, 2 and 3)
+
         void CheckWinners(MatrixPosition locations[3]);
 };

@@ -8,13 +8,13 @@
 
 /* 
 
-Essentially, I've built a class called HorseMatrix, it creates a random matrix which contains a horse structure.
+HorseMatrix, creates a random matrix which contains a horse structure.
 The horse structure contains it's location (MatrixPosition), and it's race value.
 
 Because the coder has no access to the race value the procedure to resolve the problem is the same, and when a race is done
 it's essentially a sort of a row or column from the matrix.
 
-The values are printed ONLY for the clarity of the user, you'll see that all of the values are private.
+The values are printed ONLY for the clarity of the user, you'll see that all of the values are private in the class.
 */
 
 int main() {
@@ -25,7 +25,7 @@ int main() {
     srand((unsigned) time(NULL));
     #endif
 
-    //Main entry point.
+
     HorseMatrix horses;
 
     //The first 5 races are of the rows in a for loop.
@@ -39,7 +39,7 @@ int main() {
         horses.RaceHorses(initial_races[y]);
     }
 
-    //Print the matrix after the 5 races to see the changes from the initial matrix.
+
     std::cout << "Position after " << horses.GetRacesAmount() << " races: " << std::endl;
     horses.PrintMatrix();
 
@@ -49,7 +49,7 @@ int main() {
         semifinals[y] = {y,4};
     }
 
-    //Print state, race and then print the result.
+
     std::cout << "Semifinals: " << std::endl;
     horses.RaceHorses(semifinals);
     horses.PrintMatrix();
@@ -57,15 +57,14 @@ int main() {
     //Final participants, {0,4} isn't raced because they will always be 1
     HorseMatrix::MatrixPosition finals[5] = {{0,2},{0,3},{1,3},{1,4},{2,4}};
 
-    //Print state, don't print matrix since it didn't change in this case.
+    //Don't print matrix since it didn't change in this case.
     std::cout << "Finals: " << std::endl;
     std::unique_ptr<HorseMatrix::MatrixPosition[]> finals_result = horses.RaceHorses(finals);
 
-    //Send in the winners, that being the aforementioned {0,4} and the first two from the returned 
+    //Send in the winners.
     HorseMatrix::MatrixPosition winners[3] = {{0,4},finals_result.get()[0],finals_result.get()[1]};
     horses.CheckWinners(winners);
 
-    //Print the total amount of races done
     std::cout << std::endl << "Amounts of races done: " << horses.GetRacesAmount() << std::endl;
 
     //Maintain user input so the terminal doesn't close immediately.
