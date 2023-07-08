@@ -12,7 +12,7 @@ HorseMatrix::HorseMatrix() {
     for (int i = 0; i < size; i++) {
         values[i] = i+1; //+1 to avoid 0.
     }
-
+    
     std::random_shuffle(std::begin(values),std::end(values),randomize);
 
     //Used in the for loop in order to get every value of the previously shuffled array.
@@ -104,7 +104,11 @@ std::unique_ptr<HorseMatrix::MatrixPosition[]> HorseMatrix::RaceHorses(MatrixPos
         sorting them again, then it's allowed since the logic behind it
         stays the same
         */
-        for (int i = 0; i < 5; i++) {
+        int max = 1;
+        if (number_of_races == 5) {
+            max = 5;
+        }
+        for (int i = 0; i < max; i++) {
             std::sort(temp_matrix[i], temp_matrix[i] + size, &CompareHorses);
         }
         std::swap(temp_matrix,horse_matrix);
